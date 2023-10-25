@@ -11,6 +11,11 @@ import numpy as np
 import torch
 import torchaudio
 from huggingface_hub import hf_hub_download
+import sys
+import os
+base_path = os.path.dirname(sys.path[0])
+sys.path.append(os.path.join(base_path, "src"))
+print(sys.path)
 from seamless_communication.models.inference.translator import Translator
 
 DESCRIPTION = """# SeamlessM4T
