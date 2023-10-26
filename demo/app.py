@@ -304,8 +304,9 @@ for filename in filenames:
     )
 
 AUDIO_SAMPLE_RATE = 16000.0
-MAX_INPUT_AUDIO_LENGTH = 60  # in seconds
+MAX_INPUT_AUDIO_LENGTH = 120  # in seconds
 DEFAULT_TARGET_LANGUAGE = "French"
+
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 translator = Translator(
@@ -324,7 +325,8 @@ def predict(
     input_text: str | None,
     source_language: str | None,
     target_language: str,
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+    stream: np.ndarray | None
+) -> tuple[np.ndarray, tuple[int, np.ndarray] | None, str]:
     task_name = task_name.split()[0]
     source_language_code = (
         LANGUAGE_NAME_TO_CODE[source_language] if source_language else None
@@ -341,6 +343,15 @@ def predict(
         new_arr = torchaudio.functional.resample(
             arr, orig_freq=org_sr, new_freq=AUDIO_SAMPLE_RATE
         )
+
+        # Append the arr to the stream to maintain the state
+        if stream is None:
+            stream = new_arr
+        else:
+            stream = np.concatenate([stream, new_arr])
+        new_arr = stream
+
+
         max_length = int(MAX_INPUT_AUDIO_LENGTH * AUDIO_SAMPLE_RATE)
         if new_arr.shape[1] > max_length:
             new_arr = new_arr[:, :max_length]
@@ -358,14 +369,14 @@ def predict(
         ngram_filtering=True,
     )
     if task_name in ["S2ST", "T2ST"]:
-        return (sr, wav.cpu().detach().numpy()), text_out
+        return stream, (sr, wav.cpu().detach().numpy()), text_out
     else:
-        return None, text_out
+        return stream, None, text_out
 
 
 def process_s2st_example(
-    input_audio_file: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+    stream: np.ndarray, input_audio_file: str, target_language: str
+) -> tuple[np.ndarray, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2ST",
         audio_source="file",
@@ -374,12 +385,13 @@ def process_s2st_example(
         input_text=None,
         source_language=None,
         target_language=target_language,
+        stream=stream
     )
 
 
 def process_s2tt_example(
-    input_audio_file: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+        stream: np.ndarray, input_audio_file: str, target_language: str
+) -> tuple[np.ndarray, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2TT",
         audio_source="file",
@@ -388,12 +400,13 @@ def process_s2tt_example(
         input_text=None,
         source_language=None,
         target_language=target_language,
+        stream=stream
     )
 
 
 def process_t2st_example(
     input_text: str, source_language: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[np.ndarray, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2ST",
         audio_source="",
@@ -407,7 +420,7 @@ def process_t2st_example(
 
 def process_t2tt_example(
     input_text: str, source_language: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[np.ndarray, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2TT",
         audio_source="",
@@ -421,7 +434,7 @@ def process_t2tt_example(
 
 def process_asr_example(
     input_audio_file: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[np.ndarray, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="ASR",
         audio_source="file",
@@ -572,6 +585,7 @@ with gr.Blocks(css=css) as demo:
                 type="filepath",
                 source="microphone",
                 visible=False,
+                streaming=True
             )
             input_audio_file = gr.Audio(
                 label="Input speech",
@@ -598,8 +612,8 @@ with gr.Blocks(css=css) as demo:
                 ["assets/sample_input_2.mp3", "Hindi"],
                 ["assets/sample_input_2.mp3", "Spanish"],
             ],
-            inputs=[input_audio_file, target_language],
-            outputs=[output_audio, output_text],
+            inputs=[input_audio_file, target_language, "state"],
+            outputs=[output_audio, output_text, "state"],
             fn=process_s2st_example,
         )
     with gr.Row(visible=False) as s2tt_example_row:
@@ -610,8 +624,8 @@ with gr.Blocks(css=css) as demo:
                 ["assets/sample_input_2.mp3", "Hindi"],
                 ["assets/sample_input_2.mp3", "Spanish"],
             ],
-            inputs=[input_audio_file, target_language],
-            outputs=[output_audio, output_text],
+            inputs=[input_audio_file, target_language, "state"],
+            outputs=[output_audio, output_text, "state"],
             fn=process_s2tt_example,
         )
     with gr.Row(visible=False) as t2st_example_row:
