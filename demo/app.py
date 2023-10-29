@@ -536,7 +536,8 @@ def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
         gr.update(visible=not mic, value=None),  # input_audio_file
     )
 
-def update_input_ui(task_name: str) -> tuple[dict, dict, dict, dict]:
+def update_input_ui(task_name: str,
+                    control_source: str) -> tuple[dict, dict, dict, dict]:
     task_name = task_name.split()[0]
     if task_name == "S2ST":
         return (
@@ -563,7 +564,9 @@ def update_input_ui(task_name: str) -> tuple[dict, dict, dict, dict]:
     elif task_name == "T2ST":
         return (
             gr.update(visible=False),  # audio_box
-            gr.update(visible=True),  # input_text
+            gr.update(visible=True,
+                      placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
+                visible=True),  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
                 visible=True,
@@ -574,7 +577,9 @@ def update_input_ui(task_name: str) -> tuple[dict, dict, dict, dict]:
     elif task_name == "T2TT":
         return (
             gr.update(visible=False),  # audio_box
-            gr.update(visible=True),  # input_text
+            gr.update(visible=True,
+                      placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
+                visible=True),  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
                 visible=True,
@@ -835,6 +840,21 @@ with gr.Blocks(css=css) as demo:
             api_name="run",
         )
 
+        input_text.submit(
+            fn=predict,
+            inputs=[
+                task_name,
+                control_source,
+                audio_source,
+                input_audio_mic,
+                input_audio_file,
+                input_text,
+                source_language,
+                target_language,
+            ],
+            outputs=[output_audio, output_text],
+            api_name="run",
+        )
 
 
 if __name__ == '__main__':
