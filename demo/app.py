@@ -293,7 +293,7 @@ T2TT_TARGET_LANGUAGE_NAMES = TEXT_SOURCE_LANGUAGE_NAMES
 
 # Download sample input audio files
 filenames = ["assets/sample_input.mp3", "assets/sample_input_2.mp3"]
-"""
+
 for filename in filenames:
     hf_hub_download(
         repo_id="facebook/seamless_m4t",
@@ -301,11 +301,13 @@ for filename in filenames:
         filename=filename,
         local_dir=".",
     )
-"""
+
 
 AUDIO_SAMPLE_RATE = 16000.0
 MAX_INPUT_AUDIO_LENGTH = 120  # in seconds
 DEFAULT_TARGET_LANGUAGE = "French"
+
+
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
