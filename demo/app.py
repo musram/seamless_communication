@@ -328,7 +328,8 @@ def predict(
     input_text: str | None,
     source_language: str | None,
     target_language: str,
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+    text_history: str | None
+) -> tuple[str | None, tuple[int, np.ndarray] | None, str]:
     task_name = task_name.split()[0]
     source_language_code = (
         LANGUAGE_NAME_TO_CODE[source_language] if source_language else None
@@ -359,14 +360,17 @@ def predict(
             )
         torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
     else:
-        if control_source == "translate":
-            input_data = input_text
-        elif control_source == "streaming":
+        input_data = input_text
+        if control_source == "streaming":
+            text_history += input_text
+            input_text = text_history
+        elif control_source == "translate":
             pass
         else:
             gr.Warning(
                 f"Control source can take values as 'streaming' or 'translate'."
             )
+
     text_out, wav, sr = translator.predict(
         input=input_data,
         task_str=task_name,
@@ -374,10 +378,14 @@ def predict(
         src_lang=source_language_code,
         ngram_filtering=True,
     )
+
+    #Logic for seperate handling of streaming and translate
+
+
     if task_name in ["S2ST", "T2ST"]:
-        return (sr, wav.cpu().detach().numpy()), text_out
+        return text_history, (sr, wav.cpu().detach().numpy()), text_out
     else:
-        return  None, text_out
+        return  text_history, None, text_out
 
 
 """
@@ -440,7 +448,7 @@ def predict(
 """
 def process_s2st_example(
     input_audio_file: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[str | None,tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2ST",
         control_source="translate",
@@ -450,12 +458,13 @@ def process_s2st_example(
         input_text=None,
         source_language=None,
         target_language=target_language,
+        text_history=None
     )
 
 
 def process_s2tt_example(
     input_audio_file: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[str | None,tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2TT",
         control_source="translate",
@@ -465,12 +474,13 @@ def process_s2tt_example(
         input_text=None,
         source_language=None,
         target_language=target_language,
+        text_history=None
     )
 
 
 def process_t2st_example(
     input_text: str, source_language: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[str | None, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2ST",
         control_source="translate",
@@ -480,12 +490,13 @@ def process_t2st_example(
         input_text=input_text,
         source_language=source_language,
         target_language=target_language,
+        text_history=None
     )
 
 
 def process_t2tt_example(
     input_text: str, source_language: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[str | None, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2TT",
         control_source="translate",
@@ -495,12 +506,13 @@ def process_t2tt_example(
         input_text=input_text,
         source_language=source_language,
         target_language=target_language,
+        text_history=None
     )
 
 
 def process_asr_example(
     input_audio_file: str, target_language: str
-) -> tuple[tuple[int, np.ndarray] | None, str]:
+) -> tuple[str | None, tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="ASR",
         control_source="translate",
@@ -510,6 +522,7 @@ def process_asr_example(
         input_text=None,
         source_language=None,
         target_language=target_language,
+        text_history=None
     )
 
 
@@ -627,6 +640,8 @@ def update_example_ui(task_name: str) -> tuple[dict, dict, dict, dict, dict]:
         gr.update(visible=task_name == "T2TT"),  # t2tt_example_row
         gr.update(visible=task_name == "ASR"),  # asr_example_row
     )
+
+
 
 
 
@@ -855,6 +870,25 @@ with gr.Blocks(css=css) as demo:
             outputs=[output_audio, output_text],
             api_name="run",
         )
+
+        #Todo
+        #Do streaming for the text.
+        input_text.input(
+            fn=predict,
+            inputs=[
+                task_name,
+                control_source,
+                audio_source,
+                input_audio_mic,
+                input_audio_file,
+                input_text,
+                source_language,
+                target_language,
+                "state"
+            ],
+            outputs=["state", output_audio, output_text]
+        )
+
 
 
 if __name__ == '__main__':
