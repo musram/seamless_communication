@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import List
+from typing import List, Tuple
 
 import gradio as gr
 import numpy as np
@@ -429,13 +429,13 @@ def predict(
 
 def add_to_text_stream(
         input_text: str,
-        instreams: dict
-) -> str:
-    if instreams["text"] is None:
+        instreams: list
+) -> tuple[str, str | list[list[str | None]]]:
+    if instreams is None:
         final_text = input_text
     else:
-        final_text = instreams["text"] + input_text
-    return final_text
+        final_text = instreams + [[input_text, None]]
+    return "", final_text
 
 
 def streaming_text(
@@ -447,22 +447,22 @@ def streaming_text(
         source_language: str | None,
         target_language: str,
         predict: functools.partial,
-        instreams: dict
+        instreams: List[List[str | None]]
     ) -> str:
+    instreams += input_text
     response = predict(
         task_name=task_name,
         audio_source=None,
         input_audio_mic= None,
         input_audio_file=None,
-        input_text=input_text,
+        input_text=instreams,
         source_language=source_language,
         target_language=target_language,
-        instreams=instreams["text"]
+        instreams=instreams
     )
-    history = instreams[len(instreams) - 1][0]
-    history[-1][1] = ""
+    history = ""
     for character in response:
-        history[-1][1] += character
+        history += character
         time.sleep(0.03)
         yield history
 
@@ -665,8 +665,8 @@ h1 {
 
 with gr.Blocks(css=css) as demo:
     gr.Markdown(DESCRIPTION)
+    streams = gr.State(text=[], audio=None)
     with gr.Group():
-        streams = gr.State(text=None, audio=None)
         task_name = gr.Dropdown(
             label="Task",
             choices=TASK_NAMES,
@@ -894,13 +894,8 @@ with gr.Blocks(css=css) as demo:
         # streaming for audio
 
         # Todo
-        """
+
         input_text.change(
-            fn=add_to_text_stream,
-            inputs=[streams, input_text],
-            outputs = [streams],
-            queue = False
-            ).then(
                 fn=streaming_text,
                 inputs=[task_name,
                     audio_source,
@@ -911,9 +906,10 @@ with gr.Blocks(css=css) as demo:
                     target_language,
                     streams,
                     predict],
-                outputs = [output_text]
+                outputs = [output_text],
+                queue= False
             )
-            """
+
 
 
     if __name__ == '__main__':
