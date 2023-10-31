@@ -459,7 +459,7 @@ def streaming_text(
     else:
         instreams += input_text
 
-    response = predict(
+    _, response = predict(
         task_name=task_name,
         audio_source="",
         input_audio_mic= None,
@@ -611,12 +611,23 @@ def update_input_ui(task_name: str,
                 value=DEFAULT_TARGET_LANGUAGE,
             ),  # target_language
         )
-    elif task_name == "T2TT":
+    elif task_name == "T2TT" and control_source == "translate":
         return (
             gr.update(visible=False),  # audio_box
             gr.update(visible=True,
-                      placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
-                visible=True),  # input_text
+                      placeholder="Press Enter to submit") ,  # input_text
+            gr.update(visible=True),  # source_language
+            gr.update(
+                visible=True,
+                choices=T2TT_TARGET_LANGUAGE_NAMES,
+                value=DEFAULT_TARGET_LANGUAGE,
+            ),  # target_language
+        )
+    elif task_name == "T2TT" and control_source == "microphone":
+        return (
+            gr.update(visible=False),  # audio_box
+            gr.update(visible=True,
+                      placeholder="Continously type") ,  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
                 visible=True,
