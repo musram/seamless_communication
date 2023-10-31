@@ -681,7 +681,7 @@ h1 {
 with gr.Blocks(css=css) as demo:
     gr.Markdown(DESCRIPTION)
     streams = gr.State()
-    stream_text_check_var = gr.Variable(value=False)
+    #stream_text_check_var = gr.Variable(value=False)
     with gr.Group():
         task_name = gr.Dropdown(
             label="Task",
