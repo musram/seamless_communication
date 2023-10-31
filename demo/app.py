@@ -894,7 +894,7 @@ with gr.Blocks(css=css) as demo:
         # streaming for audio
 
         # Todo
-        input_text.input(
+        input_text.change(
             fn=add_to_text_stream,
             inputs=[streams, input_text],
             outputs = [streams],
