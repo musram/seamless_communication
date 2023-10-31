@@ -468,14 +468,14 @@ def streaming_text(
         source_language=source_language,
         target_language=target_language,
     )
-    print(f"response is {}".format(response))
+    print(f"response is {response}")
     if response is None:
         response = "Nothing yet in the stream"
     history = ""
-    print(f"response is {}".format(response))
+    print(f"response is {response}")
     for character in response:
-        print(f"character is {}".format(character))
-        print(f"history is {}".format(history))
+        print(f"character is {character}")
+        print(f"history is {history}")
         print(character, history)
         history += character
         time.sleep(0.03)
