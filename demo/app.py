@@ -841,6 +841,21 @@ with gr.Blocks(css=css) as demo:
             api_name="run",
         )
 
+        input_audio_file.stop_recording(
+            fn=predict,
+            inputs=[
+                task_name,
+                audio_source,
+                input_audio_mic,
+                input_audio_file,
+                input_text,
+                source_language,
+                target_language,
+            ],
+            outputs=[output_audio, output_text],
+            api_name="run",
+        )
+
         input_text.submit(
             fn=predict,
             inputs=[
