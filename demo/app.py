@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-
+import functools
 from typing import List
 
 import gradio as gr
@@ -11,6 +11,7 @@ from huggingface_hub import hf_hub_download
 import sys
 import os
 import time
+
 base_path = os.path.dirname(sys.path[0])
 sys.path.append(os.path.join(base_path, "src"))
 print(sys.path)
@@ -291,7 +292,6 @@ S2TT_TARGET_LANGUAGE_NAMES = TEXT_SOURCE_LANGUAGE_NAMES
 # T2TT
 T2TT_TARGET_LANGUAGE_NAMES = TEXT_SOURCE_LANGUAGE_NAMES
 
-
 # Download sample input audio files
 filenames = ["assets/sample_input.mp3", "assets/sample_input_2.mp3"]
 
@@ -303,13 +303,9 @@ for filename in filenames:
         local_dir=".",
     )
 
-
 AUDIO_SAMPLE_RATE = 16000.0
 MAX_INPUT_AUDIO_LENGTH = 120  # in seconds
 DEFAULT_TARGET_LANGUAGE = "French"
-
-
-
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -320,14 +316,15 @@ translator = Translator(
     dtype=torch.float16 if "cuda" in device.type else torch.float32,
 )
 
+
 def predict(
-    task_name: str,
-    audio_source: str,
-    input_audio_mic: str | None,
-    input_audio_file: str | None,
-    input_text: str | None,
-    source_language: str | None,
-    target_language: str
+        task_name: str,
+        audio_source: str,
+        input_audio_mic: str | None,
+        input_audio_file: str | None,
+        input_text: str | None,
+        source_language: str | None,
+        target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     task_name = task_name.split()[0]
     source_language_code = (
@@ -341,13 +338,10 @@ def predict(
         else:
             input_data = input_audio_file
 
-
-
         arr, org_sr = torchaudio.load(input_data)
         new_arr = torchaudio.functional.resample(
             arr, orig_freq=org_sr, new_freq=AUDIO_SAMPLE_RATE
         )
-
 
         max_length = int(MAX_INPUT_AUDIO_LENGTH * AUDIO_SAMPLE_RATE)
         if new_arr.shape[1] > max_length:
@@ -367,11 +361,10 @@ def predict(
         ngram_filtering=True,
     )
 
-
     if task_name in ["S2ST", "T2ST"]:
         return (sr, wav.cpu().detach().numpy()), text_out
     else:
-        return  None, text_out
+        return None, text_out
 
 
 """
@@ -433,18 +426,49 @@ def predict(
 
 """
 
-def add_to_stream(audio, instream):
-    time.sleep(1)
-    if audio is None:
-        return gr.update(), instream
-    if instream is None:
-        ret = audio
+
+def add_to_text_stream(
+        input_text: str,
+        instreams: dict
+) -> str:
+    if instreams["text"] is None:
+        final_text = input_text
     else:
-        ret = (audio[0], np.concatenate((instream[1], audio[1])))
-    return ret, ret
+        final_text = instreams["text"] + input_text
+    return final_text
+
+
+def streaming_text(
+        task_name: str,
+        audio_source: str,
+        input_audio_mic: str | None,
+        input_audio_file: str | None,
+        input_text: str | None,
+        source_language: str | None,
+        target_language: str,
+        predict: functools.partial,
+        instreams: dict
+    ) -> str:
+    response = predict(
+        task_name=task_name,
+        audio_source=None,
+        input_audio_mic= None,
+        input_audio_file=None,
+        input_text=input_text,
+        source_language=source_language,
+        target_language=target_language,
+        instreams=instreams["text"]
+    )
+    history = instreams[len(instreams) - 1][0]
+    history[-1][1] = ""
+    for character in response:
+        history[-1][1] += character
+        time.sleep(0.03)
+        yield history
+
 
 def process_s2st_example(
-    input_audio_file: str, target_language: str
+        input_audio_file: str, target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2ST",
@@ -458,7 +482,7 @@ def process_s2st_example(
 
 
 def process_s2tt_example(
-    input_audio_file: str, target_language: str
+        input_audio_file: str, target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2TT",
@@ -472,7 +496,7 @@ def process_s2tt_example(
 
 
 def process_t2st_example(
-    input_text: str, source_language: str, target_language: str
+        input_text: str, source_language: str, target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2ST",
@@ -486,7 +510,7 @@ def process_t2st_example(
 
 
 def process_t2tt_example(
-    input_text: str, source_language: str, target_language: str
+        input_text: str, source_language: str, target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2TT",
@@ -500,7 +524,7 @@ def process_t2tt_example(
 
 
 def process_asr_example(
-    input_audio_file: str, target_language: str
+        input_audio_file: str, target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="ASR",
@@ -513,10 +537,7 @@ def process_asr_example(
     )
 
 
-
-
-
-#Functions to be outputed from the event listeners
+# Functions to be outputed from the event listeners
 def update_control_source_ui(control_source: str) -> gr.Dropdown:
     control_source = control_source == "streaming"
     if control_source:
@@ -535,6 +556,7 @@ def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
         gr.update(visible=mic, value=None),  # input_audio_mic
         gr.update(visible=not mic, value=None),  # input_audio_file
     )
+
 
 def update_input_ui(task_name: str,
                     control_source: str) -> tuple[dict, dict, dict, dict]:
@@ -629,9 +651,6 @@ def update_example_ui(task_name: str) -> tuple[dict, dict, dict, dict, dict]:
     )
 
 
-
-
-
 css = """
 h1 {
   text-align: center;
@@ -644,10 +663,10 @@ h1 {
 }
 """
 
-
 with gr.Blocks(css=css) as demo:
     gr.Markdown(DESCRIPTION)
     with gr.Group():
+        streams = gr.State(text=None, audio=None)
         task_name = gr.Dropdown(
             label="Task",
             choices=TASK_NAMES,
@@ -776,7 +795,7 @@ with gr.Blocks(css=css) as demo:
                 fn=process_asr_example,
             )
 
-        #Event listeners
+        # Event listeners
         control_source.change(
             fn=update_control_source_ui,
             inputs=control_source,
@@ -871,13 +890,29 @@ with gr.Blocks(css=css) as demo:
             api_name=False,
         )
 
+        # Todo
+        # streaming for audio
 
-        #Todo
-        #streaming for audio
+        # Todo
+        input_text.input(
+            fn=add_to_text_stream,
+            inputs=[streams, input_text],
+            outputs = [streams],
+            queue = False
+            ).then(
+                fn=streaming_text,
+                inputs=[task_name,
+                    audio_source,
+                    input_audio_mic,
+                    input_audio_file,
+                    input_text,
+                    source_language,
+                    target_language,
+                    streams,
+                    predict],
+                outputs = [output_text]
+            )
 
-        #Todo
-        #Do streaming for the text.
 
-
-if __name__ == '__main__':
-    demo.queue().launch(share=True)
+    if __name__ == '__main__':
+        demo.queue().launch(share=True)
