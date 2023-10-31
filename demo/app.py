@@ -426,6 +426,12 @@ def predict(
 
 """
 
+def stream_text_check_var_func(
+    stream_text_check_var: bool,
+    input_text : str
+) -> bool:
+    if len(input_text) > 3:
+        return True
 
 def add_to_text_stream(
         input_text: str,
@@ -462,6 +468,8 @@ def streaming_text(
         source_language=source_language,
         target_language=target_language,
     )
+    if response is None:
+        response = "Wait"
     history = ""
     for character in response:
         history += character
@@ -668,6 +676,7 @@ h1 {
 with gr.Blocks(css=css) as demo:
     gr.Markdown(DESCRIPTION)
     streams = gr.State(text=[], audio=None)
+    stream_text_check_var = gr.Variable(value=False)
     with gr.Group():
         task_name = gr.Dropdown(
             label="Task",
@@ -906,7 +915,7 @@ with gr.Blocks(css=css) as demo:
                     input_text,
                     source_language,
                     target_language,
-                    streams,
+                    streams
                     ],
                 outputs = [output_text],
                 queue= False
