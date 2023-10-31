@@ -474,9 +474,10 @@ def streaming_text(
         response = "Nothing yet in the stream"
     history = ""
     print(f"response is {response}")
-    byte_string = response.bytes()
-    for word in re.split(u'\s|\u200b', byte_string):
-        history += word.encode('utf-8')
+    byte_response = response.bytes()
+    string_response = byte_response.decode("utf-8")
+    for word in string_response.split(" "):
+        history += word
         time.sleep(0.03)
         yield history
 
