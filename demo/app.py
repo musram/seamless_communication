@@ -473,11 +473,11 @@ def streaming_text(
         response = "Nothing yet in the stream"
     history = ""
     print(f"response is {response}")
-    for character in response:
-        print(f"character is {character}")
+    for word in response.split(sep=' '):
+        print(f"character is {word}")
         print(f"history is {history}")
-        print(character, history)
-        history += character
+        print(word, history)
+        history += word
         time.sleep(0.03)
         yield history
 
