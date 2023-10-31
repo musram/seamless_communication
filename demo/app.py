@@ -448,7 +448,7 @@ def streaming_text(
         target_language: str,
         instreams: List[str | None]
     ) -> str:
-    if instreams:
+    if instreams is None:
         instreams = input_text
     else:
         instreams += input_text
