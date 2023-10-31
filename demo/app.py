@@ -472,6 +472,7 @@ def streaming_text(
         response = "Nothing yet in the stream"
     history = ""
     for character in response:
+        print(character, history)
         history += character
         time.sleep(0.03)
         yield history
@@ -924,4 +925,4 @@ with gr.Blocks(css=css) as demo:
 
 
     if __name__ == '__main__':
-        demo.queue().launch(share=True)
+        demo.queue().launch(share=True, debug=True)
