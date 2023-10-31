@@ -11,6 +11,7 @@ from huggingface_hub import hf_hub_download
 import sys
 import os
 import time
+import re
 
 base_path = os.path.dirname(sys.path[0])
 sys.path.append(os.path.join(base_path, "src"))
@@ -473,11 +474,9 @@ def streaming_text(
         response = "Nothing yet in the stream"
     history = ""
     print(f"response is {response}")
-    for word in response.split(sep=' '):
-        print(f"character is {word}")
-        print(f"history is {history}")
-        print(word, history)
-        history += word
+    byte_string = response.bytes()
+    for word in re.split(u'\s|\u200b', byte_string):
+        history += word.encode('utf-8')
         time.sleep(0.03)
         yield history
 
