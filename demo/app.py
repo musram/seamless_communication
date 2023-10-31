@@ -838,10 +838,12 @@ with gr.Blocks(css=css) as demo:
                 target_language,
             ],
             outputs=[output_audio, output_text],
-            api_name="run",
+            api_name=False,
         )
 
         input_audio_file.stop_recording(
+            lambda: None
+        ).then(
             fn=predict,
             inputs=[
                 task_name,
@@ -853,7 +855,7 @@ with gr.Blocks(css=css) as demo:
                 target_language,
             ],
             outputs=[output_audio, output_text],
-            api_name="run",
+            api_name=False,
         )
 
         input_text.submit(
@@ -868,7 +870,7 @@ with gr.Blocks(css=css) as demo:
                 target_language,
             ],
             outputs=[output_audio, output_text],
-            api_name="run",
+            api_name=False,
         )
 
 
