@@ -446,19 +446,17 @@ def streaming_text(
         input_text: str | None,
         source_language: str | None,
         target_language: str,
-        predict: functools.partial,
         instreams: List[List[str | None]]
     ) -> str:
     instreams += input_text
     response = predict(
         task_name=task_name,
-        audio_source=None,
+        audio_source="",
         input_audio_mic= None,
         input_audio_file=None,
-        input_text=instreams,
+        input_text=input_text,
         source_language=source_language,
         target_language=target_language,
-        instreams=instreams
     )
     history = ""
     for character in response:
