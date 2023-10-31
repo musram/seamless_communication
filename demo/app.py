@@ -449,7 +449,7 @@ def streaming_text(
         instreams: List[List[str | None]]
     ) -> str:
     instreams += input_text
-    """
+
     response = predict(
         task_name=task_name,
         audio_source="",
@@ -459,8 +459,6 @@ def streaming_text(
         source_language=source_language,
         target_language=target_language,
     )
-    """
-    response = "Hello how are you"
     history = ""
     for character in response:
         history += character
@@ -906,7 +904,7 @@ with gr.Blocks(css=css) as demo:
                     source_language,
                     target_language,
                     streams,
-                    predict],
+                    ],
                 outputs = [output_text],
                 queue= False
             )
