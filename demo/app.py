@@ -452,7 +452,7 @@ def streaming_text(
         input_text: str | None,
         source_language: str | None,
         target_language: str,
-        instreams: List[str | None]
+        instreams: str | None
     ) -> str:
     if instreams is None:
         instreams = input_text
@@ -469,7 +469,7 @@ def streaming_text(
         target_language=target_language,
     )
     if response is None:
-        response = "Wait"
+        response = "Nothing yet in the stream"
     history = ""
     for character in response:
         history += character
