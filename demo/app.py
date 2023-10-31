@@ -477,8 +477,9 @@ def streaming_text(
     byte_response = response.bytes()
     string_response = byte_response.decode("utf-8")
     for word in string_response.split(" "):
-        history += word
-        time.sleep(0.03)
+        history += word + " "
+        time.sleep(0.001)
+        print(f"history is {history}")
         yield history
 
 
@@ -681,7 +682,6 @@ h1 {
 with gr.Blocks(css=css) as demo:
     gr.Markdown(DESCRIPTION)
     streams = gr.State()
-    #stream_text_check_var = gr.Variable(value=False)
     with gr.Group():
         task_name = gr.Dropdown(
             label="Task",
