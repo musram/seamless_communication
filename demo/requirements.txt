@@ -1,6 +1,6 @@
 fairseq2
 git+https://github.com/facebookresearch/seamless_communication
-gradio=3.50.2
+gradio==3.50.2
 huggingface_hub
 torch
 torchaudio
