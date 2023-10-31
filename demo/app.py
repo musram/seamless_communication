@@ -611,23 +611,12 @@ def update_input_ui(task_name: str,
                 value=DEFAULT_TARGET_LANGUAGE,
             ),  # target_language
         )
-    elif task_name == "T2TT" and control_source == "translate":
+    elif task_name == "T2TT":
         return (
             gr.update(visible=False),  # audio_box
             gr.update(visible=True,
-                      placeholder="Press Enter to submit") ,  # input_text
-            gr.update(visible=True),  # source_language
-            gr.update(
-                visible=True,
-                choices=T2TT_TARGET_LANGUAGE_NAMES,
-                value=DEFAULT_TARGET_LANGUAGE,
-            ),  # target_language
-        )
-    elif task_name == "T2TT" and control_source == "microphone":
-        return (
-            gr.update(visible=False),  # audio_box
-            gr.update(visible=True,
-                      placeholder="Continously type") ,  # input_text
+                      placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
+                visible=True),  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
                 visible=True,
