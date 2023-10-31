@@ -446,16 +446,19 @@ def streaming_text(
         input_text: str | None,
         source_language: str | None,
         target_language: str,
-        instreams: List[List[str | None]]
+        instreams: List[str | None]
     ) -> str:
-    instreams += input_text
+    if instreams:
+        instreams = input_text
+    else:
+        instreams += input_text
 
     response = predict(
         task_name=task_name,
         audio_source="",
         input_audio_mic= None,
         input_audio_file=None,
-        input_text=input_text,
+        input_text=instreams,
         source_language=source_language,
         target_language=target_language,
     )
