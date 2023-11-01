@@ -454,22 +454,17 @@ def streaming_text(
         input_text: str | None,
         source_language: str | None,
         target_language: str,
-        instreams: str | None
     ) -> str:
     if control_source == "translate":
         yield "Please click Translate"
     print(f"input_text is {input_text}")
-    if instreams is None:
-        instreams = input_text
-    else:
-        instreams += input_text
 
     _, response = predict(
         task_name=task_name,
         audio_source="",
         input_audio_mic= None,
         input_audio_file=None,
-        input_text=instreams,
+        input_text=input_text,
         source_language=source_language,
         target_language=target_language,
     )
@@ -990,7 +985,6 @@ with gr.Blocks(css=css) as demo:
                     input_text,
                     source_language,
                     target_language,
-                    streams
                     ],
                 outputs = [output_text],
                 queue= False
