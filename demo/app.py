@@ -466,6 +466,19 @@ def stream_audio(lag):   #for T2ST
 
     #return iter_chunks(), "fixed response"
 """
+
+def streaming_speech_2_text(
+        task_name: str,
+        control_source: str,
+        audio_source: str,
+        input_audio_mic: str | None,
+        input_audio_file: str | None,
+        input_text: str | None,
+        source_language: str | None,
+        target_language: str,
+) -> str:
+    pass
+
 def streaming_text(
         task_name: str,
         control_source: str,
@@ -1002,6 +1015,7 @@ with gr.Blocks(css=css) as demo:
 
         # Todo
         # streaming for S2TT
+        """
         input_audio_file.stop_recording(
             fn=streaming_text,
             inputs=[task_name,
@@ -1016,13 +1030,14 @@ with gr.Blocks(css=css) as demo:
             outputs=[output_text],
             queue=False
         )
+        """
 
         # streaming fot T2TT
         input_text.change(
                 fn=streaming_text,
                 inputs=[task_name,
                     control_source,
-                    " ",
+                    "",
                     input_audio_mic,
                     None,
                     None,
