@@ -841,7 +841,7 @@ with gr.Blocks(css=css) as demo:
 
         task_name.change(
             fn=update_input_ui,
-            inputs=task_name,
+            inputs=[task_name, control_source],
             outputs=[
                 audio_box,
                 input_text,
