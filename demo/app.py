@@ -1037,10 +1037,10 @@ with gr.Blocks(css=css) as demo:
                 fn=streaming_text,
                 inputs=[task_name,
                     control_source,
-                    audio_source
+                    audio_source,
                     input_audio_mic,
-                    input_audio_file
-                    input_text
+                    input_audio_file,
+                    input_text,
                     source_language,
                     target_language,
                     ],
