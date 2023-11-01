@@ -584,7 +584,7 @@ def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
 
 
 def update_input_ui(task_name: str,
-                    control_source: str) -> tuple[dict, dict, dict, dict]:
+                    control_source: str) -> tuple[dict, dict, dict, dict, dict]:
     task_name = task_name.split()[0]
     print(f"task name is {task_name} and control_source is {control_source}")
     if task_name == "S2ST":
@@ -597,6 +597,7 @@ def update_input_ui(task_name: str,
                 choices=S2ST_TARGET_LANGUAGE_NAMES,
                 value=DEFAULT_TARGET_LANGUAGE,
             ),  # target_language
+            gr.update(visible=True)   if control_source == 'translate'  else gr.update(visible=False)  #btn
         )
     elif task_name == "S2TT":
         return (
@@ -608,6 +609,8 @@ def update_input_ui(task_name: str,
                 choices=S2TT_TARGET_LANGUAGE_NAMES,
                 value=DEFAULT_TARGET_LANGUAGE,
             ),  # target_language
+            gr.update(visible=True) if control_source == 'translate' else gr.update(visible=False)  # btn
+
         )
     elif task_name == "T2ST":
         return (
@@ -621,6 +624,8 @@ def update_input_ui(task_name: str,
                 choices=S2ST_TARGET_LANGUAGE_NAMES,
                 value=DEFAULT_TARGET_LANGUAGE,
             ),  # target_language
+            gr.update(visible=True) if control_source == 'translate' else gr.update(visible=False)  # btn
+
         )
     elif task_name == "T2TT":
         return (
@@ -634,6 +639,8 @@ def update_input_ui(task_name: str,
                 choices=T2TT_TARGET_LANGUAGE_NAMES,
                 value=DEFAULT_TARGET_LANGUAGE,
             ),  # target_language
+            gr.update(visible=True) if control_source == 'translate' else gr.update(visible=False)  # btn
+
         )
     elif task_name == "ASR":
         return (
@@ -645,6 +652,8 @@ def update_input_ui(task_name: str,
                 choices=S2TT_TARGET_LANGUAGE_NAMES,
                 value=DEFAULT_TARGET_LANGUAGE,
             ),  # target_language
+            gr.update(visible=True) if control_source == 'translate' else gr.update(visible=False)  # btn
+
         )
     else:
         raise ValueError(f"Unknown task: {task_name}")
@@ -736,7 +745,7 @@ with gr.Blocks(css=css) as demo:
                 visible=False,
             )
         input_text = gr.Textbox(label="Input text", visible=False)
-
+        btn = gr.Button("Translate")
         with gr.Column():
             output_audio = gr.Audio(
                 label="Translated speech",
@@ -880,6 +889,7 @@ with gr.Blocks(css=css) as demo:
                 input_text,
                 source_language,
                 target_language,
+                btn
             ],
             queue=False,
             api_name=False,
@@ -903,6 +913,7 @@ with gr.Blocks(css=css) as demo:
             api_name=False,
         )
 
+        """
         input_audio_file.upload(
             fn=predict,
             inputs=[
@@ -946,6 +957,21 @@ with gr.Blocks(css=css) as demo:
             ],
             outputs=[output_audio, output_text],
             api_name=False,
+        )
+        """
+        btn.click(
+            fn=predict,
+            inputs=[
+                task_name,
+                audio_source,
+                input_audio_mic,
+                input_audio_file,
+                input_text,
+                source_language,
+                target_language,
+            ],
+            outputs=[output_audio, output_text],
+            api_name="run",
         )
 
         # Todo
