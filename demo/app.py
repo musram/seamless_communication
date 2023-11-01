@@ -614,7 +614,7 @@ def update_input_ui(task_name: str,
             gr.update(visible=False),  # audio_box
             gr.update(visible=True,
                       placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
-                visible=True),  # input_text
+                visible=True, placeholder="Continuously type"),  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
                 visible=True,
@@ -627,7 +627,7 @@ def update_input_ui(task_name: str,
             gr.update(visible=False),  # audio_box
             gr.update(visible=True,
                       placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
-                visible=True),  # input_text
+                visible=True, placeholder="Continuously type"),  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
                 visible=True,
