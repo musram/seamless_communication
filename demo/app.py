@@ -586,6 +586,7 @@ def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
 def update_input_ui(task_name: str,
                     control_source: str) -> tuple[dict, dict, dict, dict]:
     task_name = task_name.split()[0]
+    print(f"task name is {task_name} and control_source is {control_source}")
     if task_name == "S2ST":
         return (
             gr.update(visible=True),  # audio_box
