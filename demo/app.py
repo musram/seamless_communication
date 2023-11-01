@@ -461,9 +461,9 @@ def streaming_text(
 
     _, response = predict(
         task_name=task_name,
-        audio_source="",
-        input_audio_mic= None,
-        input_audio_file=None,
+        audio_source=audio_source,
+        input_audio_mic= input_audio_mic,
+        input_audio_file=input_audio_file,
         input_text=input_text,
         source_language=source_language,
         target_language=target_language,
@@ -487,6 +487,9 @@ def streaming_text(
         yield history
     """
     yield string_response
+
+
+
 
 
 def process_s2st_example(
@@ -572,10 +575,13 @@ def update_control_source_ui(control_source: str) -> gr.Dropdown:
         )
 
 
-def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
+def update_audio_ui(
+        audio_source: str,
+        control_source: str) -> tuple[dict, dict]:
     mic = audio_source == "microphone"
+    translate = control_source == "translate"
     return (
-        gr.update(visible=mic, value=None),  # input_audio_mic
+        gr.update(visible=mic, value=None) if translate else gr.update(visible=mic, streaming=True),# input_audio_mic
         gr.update(visible=not mic, value=None),  # input_audio_file
     )
 
@@ -586,7 +592,7 @@ def update_input_ui(task_name: str,
     print(f"task name is {task_name} and control_source is {control_source}")
     if task_name == "S2ST":
         return (
-            gr.update(visible=True),  # input_audio_mic
+            gr.update(visible=True),  # audio_box
             gr.update(visible=False),  # input_text
             gr.update(visible=False),  # source_language
             gr.update(
@@ -837,7 +843,7 @@ with gr.Blocks(css=css) as demo:
         )
         audio_source.change(
             fn=update_audio_ui,
-            inputs=audio_source,
+            inputs=[audio_source, control_source],
             outputs=[
                 input_audio_mic,
                 input_audio_file,
@@ -974,16 +980,30 @@ with gr.Blocks(css=css) as demo:
 
         # Todo
         # streaming for S2TT
+        input_audio_file.stop_recording(
+            fn=streaming_text,
+            inputs=[task_name,
+                    control_source,
+                    " ",
+                    None,
+                    None,
+                    input_text,
+                    source_language,
+                    target_language,
+                    ],
+            outputs=[output_text],
+            queue=False
+        )
 
         # streaming fot T2TT
         input_text.change(
                 fn=streaming_text,
                 inputs=[task_name,
                     control_source,
-                    audio_source,
+                    " ",
                     input_audio_mic,
-                    input_audio_file,
-                    input_text,
+                    None,
+                    None,
                     source_language,
                     target_language,
                     ],
