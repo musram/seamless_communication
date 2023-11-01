@@ -458,6 +458,7 @@ def streaming_text(
     ) -> str:
     if control_source == "translate":
         yield "Please click Translate"
+    print(f"input_text is {input_text}")
     if instreams is None:
         instreams = input_text
     else:
