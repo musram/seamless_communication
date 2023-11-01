@@ -457,7 +457,7 @@ def streaming_text(
         instreams: str | None
     ) -> str:
     if control_source == "translate":
-        yield None
+        yield "Please click Translate"
     if instreams is None:
         instreams = input_text
     else:
@@ -984,6 +984,7 @@ with gr.Blocks(css=css) as demo:
         input_text.change(
                 fn=streaming_text,
                 inputs=[task_name,
+                    control_source,
                     audio_source,
                     input_audio_mic,
                     input_audio_file,
