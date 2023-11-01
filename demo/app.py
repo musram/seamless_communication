@@ -480,11 +480,14 @@ def streaming_text(
     string_response_3_split_words = [string_response_split[i:i+3] for i in range(0, len(string_response_split), 3)]
     string_response_3_joined_words = [" ".join(word) for word in string_response_3_split_words]
     print(f"string_response_3_joined_words is {string_response_3_joined_words}")
+    """
     for partial_sentence in string_response_3_joined_words:
         history += partial_sentence + " "
-        time.sleep(0.001)
+        time.sleep(0.0000001)
         print(f"history is {history}")
         yield history
+    """
+    yield string_response
 
 
 def process_s2st_example(
