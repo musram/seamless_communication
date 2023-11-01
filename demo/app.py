@@ -495,9 +495,9 @@ def streaming_text(
 
     _, response = predict(
         task_name=task_name,
-        audio_source=audio_source,
-        input_audio_mic= input_audio_mic,
-        input_audio_file=input_audio_file,
+        audio_source="",
+        input_audio_mic= None,
+        input_audio_file=None,
         input_text=input_text,
         source_language=source_language,
         target_language=target_language,
@@ -1037,10 +1037,10 @@ with gr.Blocks(css=css) as demo:
                 fn=streaming_text,
                 inputs=[task_name,
                     control_source,
-                    "",
+                    audio_source
                     input_audio_mic,
-                    None,
-                    None,
+                    input_audio_file
+                    input_text
                     source_language,
                     target_language,
                     ],
