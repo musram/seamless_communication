@@ -472,11 +472,9 @@ def streaming_text(
         source_language=source_language,
         target_language=target_language,
     )
-    print(f"response is {response}")
     if response is None:
         response = "Nothing yet in the stream"
     history = ""
-    print(f"response is {response}")
     byte_response = response.bytes()
     string_response = byte_response.decode("utf-8")
     """
