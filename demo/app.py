@@ -447,6 +447,7 @@ def add_to_text_stream(
 
 def streaming_text(
         task_name: str,
+        control_source: str,
         audio_source: str,
         input_audio_mic: str | None,
         input_audio_file: str | None,
@@ -455,6 +456,8 @@ def streaming_text(
         target_language: str,
         instreams: str | None
     ) -> str:
+    if control_source == "translate":
+        yield None
     if instreams is None:
         instreams = input_text
     else:
@@ -616,7 +619,7 @@ def update_input_ui(task_name: str,
         return (
             gr.update(visible=False),  # audio_box
             gr.update(visible=True,
-                      placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
+                      placeholder="Click Translate to submit") if control_source == "translate" else gr.update(
                 visible=True, placeholder="Continuously type"),  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
@@ -631,7 +634,7 @@ def update_input_ui(task_name: str,
         return (
             gr.update(visible=False),  # audio_box
             gr.update(visible=True,
-                      placeholder="Press Enter to submit") if control_source == "translate" else gr.update(
+                      placeholder="Click Translate to submit") if control_source == "translate" else gr.update(
                 visible=True, placeholder="Continuously type"),  # input_text
             gr.update(visible=True),  # source_language
             gr.update(
