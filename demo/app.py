@@ -840,7 +840,7 @@ with gr.Blocks(css=css) as demo:
             api_name=False,
         )
 
-        task_name.change(
+        control_source.change(
             fn=update_input_ui,
             inputs=[task_name, control_source],
             outputs=[
