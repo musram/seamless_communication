@@ -631,6 +631,7 @@ def update_input_ui(task_name: str,
 
         )
     elif task_name == "T2TT":
+        print(f"in the T2TT {task_name} and {control_source}")
         return (
             gr.update(visible=False),  # audio_source
             gr.update(visible=False),  # input_audio_mic
