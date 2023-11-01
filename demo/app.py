@@ -457,7 +457,7 @@ def streaming_text(
         instreams: str | None
     ) -> str:
     if control_source == "translate":
-        yield None
+        yield "Click translate after entering the text in the input textbox"
     if instreams is None:
         instreams = input_text
     else:
