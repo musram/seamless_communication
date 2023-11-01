@@ -444,7 +444,28 @@ def add_to_text_stream(
         final_text = instreams + [[input_text, None]]
     return "", final_text
 
+""""
+def stream_audio(lag):   #for T2ST
+    audio_file = 'test.mp3'  # Your audio file path
+    audio = AudioSegment.from_mp3(audio_file)
+    chunk_length = 1000
+    chunks = []
+    while len(audio) > chunk_length:
+        chunks.append(audio[:chunk_length])
+        audio = audio[chunk_length:]
+    if len(audio):  # Ensure we don't end up with an empty chunk
+        chunks.append(audio)
 
+    def iter_chunks():
+        #https://github.com/gradio-app/gradio/pull/5077
+        for chunk in chunks:
+            file_like_object = chunk.export(format="mp3")
+            data = file_like_object.read()
+            time.sleep(lag)
+            yield data, "fixed response"
+
+    #return iter_chunks(), "fixed response"
+"""
 def streaming_text(
         task_name: str,
         control_source: str,
@@ -580,6 +601,7 @@ def update_audio_ui(
         control_source: str) -> tuple[dict, dict]:
     mic = audio_source == "microphone"
     translate = control_source == "translate"
+    print(f"translate is {translate}")
     return (
         gr.update(visible=mic, value=None) if translate else gr.update(visible=mic, streaming=True),# input_audio_mic
         gr.update(visible=not mic, value=None),  # input_audio_file
