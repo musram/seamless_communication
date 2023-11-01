@@ -581,12 +581,14 @@ def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
 
 
 def update_input_ui(task_name: str,
-                    control_source: str) -> tuple[dict, dict, dict, dict, dict]:
+                    control_source: str) -> tuple[dict, dict, dict, dict, dict, dict, dict]:
     task_name = task_name.split()[0]
     print(f"task name is {task_name} and control_source is {control_source}")
     if task_name == "S2ST":
         return (
-            gr.update(visible=True),  # audio_box
+            gr.update(visible=True),  # audio_source
+            gr.update(visible=True),  # input_audio_mic
+            gr.update(visible=True),  # input_audio_file
             gr.update(visible=False),  # input_text
             gr.update(visible=False),  # source_language
             gr.update(
@@ -598,7 +600,9 @@ def update_input_ui(task_name: str,
         )
     elif task_name == "S2TT":
         return (
-            gr.update(visible=True),  # audio_box
+            gr.update(visible=True),  # audio_source
+            gr.update(visible=True),  # input_audio_mic
+            gr.update(visible=True),  # input_audio_file
             gr.update(visible=False),  # input_text
             gr.update(visible=False),  # source_language
             gr.update(
@@ -611,7 +615,9 @@ def update_input_ui(task_name: str,
         )
     elif task_name == "T2ST":
         return (
-            gr.update(visible=False),  # audio_box
+            gr.update(visible=False),  # audio_source
+            gr.update(visible=False),  # input_audio_mic
+            gr.update(visible=False),  # input_audio_file
             gr.update(visible=True,
                       placeholder="Click Translate to submit") if control_source == "translate" else gr.update(
                 visible=True, placeholder="Continuously type"),  # input_text
@@ -626,7 +632,9 @@ def update_input_ui(task_name: str,
         )
     elif task_name == "T2TT":
         return (
-            gr.update(visible=False),  # audio_box
+            gr.update(visible=False),  # audio_source
+            gr.update(visible=False),  # input_audio_mic
+            gr.update(visible=False),  # input_audio_file
             gr.update(visible=True,
                       placeholder="Click Translate to submit") if control_source == "translate" else gr.update(
                 visible=True, placeholder="Continuously type"),  # input_text
@@ -641,7 +649,9 @@ def update_input_ui(task_name: str,
         )
     elif task_name == "ASR":
         return (
-            gr.update(visible=True),  # audio_box
+            gr.update(visible=True),  # audio_source
+            gr.update(visible=True),  # input_audio_mic
+            gr.update(visible=True),  # input_audio_file
             gr.update(visible=False),  # input_text
             gr.update(visible=False),  # source_language
             gr.update(
@@ -851,10 +861,13 @@ with gr.Blocks(css=css) as demo:
             fn=update_input_ui,
             inputs=[task_name, control_source],
             outputs=[
-                audio_box,
+                audio_source,
+                input_audio_mic,
+                input_audio_file,
                 input_text,
                 source_language,
                 target_language,
+                btn
             ],
             queue=False,
             api_name=False,
