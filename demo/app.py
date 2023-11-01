@@ -745,7 +745,7 @@ with gr.Blocks(css=css) as demo:
                 visible=False,
             )
         input_text = gr.Textbox(label="Input text", visible=False)
-        btn = gr.Button("Translate")
+        btn = gr.Button("Translate", visible=False)
         with gr.Column():
             output_audio = gr.Audio(
                 label="Translated speech",
