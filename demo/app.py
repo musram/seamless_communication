@@ -476,8 +476,16 @@ def streaming_text(
     print(f"response is {response}")
     byte_response = response.bytes()
     string_response = byte_response.decode("utf-8")
-    for word in string_response.split(" "):
-        history += word + " "
+    string_response_split = string_response.split(" ")
+    string_response_3_joined_words = []
+    for i in range(len(string_response_split)):
+        word_joined = ""
+        for j in range(0,3):
+            word_joined += string_response_split[i] + " "
+        string_response_3_joined_words.append(word_joined)
+    print(f"string_response_3_joined_words is {string_response_3_joined_words}")
+    for partial_sentence in string_response.split(" "):
+        history += partial_sentence
         time.sleep(0.001)
         print(f"history is {history}")
         yield history
