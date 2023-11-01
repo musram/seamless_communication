@@ -840,6 +840,38 @@ with gr.Blocks(css=css) as demo:
             api_name=False,
         )
 
+        #change input ui and output ui based on both control_source and task_name
+        task_name.change(
+            fn=update_input_ui,
+            inputs=[task_name, control_source],
+            outputs=[
+                audio_box,
+                input_text,
+                source_language,
+                target_language,
+            ],
+            queue=False,
+            api_name=False,
+        ).then(
+            fn=update_output_ui,
+            inputs=task_name,
+            outputs=[output_audio, output_text],
+            queue=False,
+            api_name=False,
+        ).then(
+            fn=update_example_ui,
+            inputs=task_name,
+            outputs=[
+                s2st_example_row,
+                s2tt_example_row,
+                t2st_example_row,
+                t2tt_example_row,
+                asr_example_row,
+            ],
+            queue=False,
+            api_name=False,
+        )
+
         control_source.change(
             fn=update_input_ui,
             inputs=[task_name, control_source],
