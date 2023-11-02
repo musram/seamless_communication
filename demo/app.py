@@ -583,7 +583,7 @@ def streaming_text(
 
         print(type(wav))
         print(text_out)
-        audio = AudioSegment.from_wav(wav)
+        audio = wav
         i = 0
         chunk_size = 1000
 
@@ -792,11 +792,14 @@ def update_input_ui(task_name: str,
         raise ValueError(f"Unknown task: {task_name}")
 
 
-def update_output_ui(task_name: str) -> tuple[dict, dict]:
+def update_output_ui(
+        task_name: str,
+        control_source: str) -> tuple[dict, dict]:
     task_name = task_name.split()[0]
+    translate = control_source == 'translate'
     if task_name in ["S2ST", "T2ST"]:
         return (
-            gr.update(visible=True, value=None),  # output_audio
+            gr.update(visible=True, value=None) if translate else gr.update(visible=True, streaming=True, autoplay=True), # output_audio
             gr.update(value=None),  # output_text
         )
     elif task_name in ["S2TT", "T2TT", "ASR"]:
