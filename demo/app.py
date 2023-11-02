@@ -517,6 +517,7 @@ def streaming_text(
         target_language: str,
         streams
 ) -> str:
+    task_name = task_name.split()[0]
     if control_source == "translate":
         yield "Please click Translate"
     response = None
