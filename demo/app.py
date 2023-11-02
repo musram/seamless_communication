@@ -583,6 +583,8 @@ def streaming_text(
 
         print(type(wav))
         print(text_out)
+        byte_response = text_out.bytes()
+        string_response = byte_response.decode("utf-8")
         audio = wav
         lag = 2
 
@@ -601,7 +603,7 @@ def streaming_text(
                 time.sleep(lag)
                 yield data
 
-        return iter_chunks(), text_out
+        return iter_chunks(), string_response
 
     else:
         print(f"In streaming text {task_name}")
