@@ -478,6 +478,8 @@ def add_to_stream(audio, instream):
     new_arr = torchaudio.functional.resample(
         arr_audio, orig_freq=org_sr_audio, new_freq=AUDIO_SAMPLE_RATE
     )
+    new_arr = new_arr.astype(np.float32)
+    new_arr /= np.max(np.abs(new_arr))
 
     if instream is None:
         #print(new_arr)
