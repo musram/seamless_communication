@@ -521,6 +521,7 @@ def streaming_text(
         yield "Please click Translate"
     response = None
     string_response = None
+    print(f"in the {task_name}")
     if task_name == "T2TT":
         _, response = predict(
                 task_name=task_name,
@@ -571,6 +572,8 @@ def streaming_text(
         yield history
     """
     yield string_response
+
+
 
 
 
