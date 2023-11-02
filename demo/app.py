@@ -474,6 +474,9 @@ def add_to_stream(audio, instream):
 
     print(f"instream is {instream}")
     print(f"audio is {audio}")
+    print(f"audio 0 is {audio[0]}")
+    print(f"audio 1 is {audio[1]}")
+
     if instream is None:
         ret = audio
     else:
@@ -507,6 +510,7 @@ def streaming_text(
 ) -> str:
     if control_source == "translate":
         yield "Please click Translate"
+    response = None
     if task_name == "T2TT":
         _, response = predict(
                 task_name=task_name,
