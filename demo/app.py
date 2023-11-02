@@ -480,14 +480,14 @@ def add_to_stream(audio, instream):
     )
 
     if instream is None:
-        print(new_arr)
-        print(org_sr_audio)
-        print(org_sr_audio, new_arr)
+        #print(new_arr)
+        #print(org_sr_audio)
+        #print(org_sr_audio, new_arr)
         ret = (org_sr_audio, new_arr)
     else:
         org_sr_instream, arr_instream  = instream
-        print(np.shape(arr_instream))
-        print(np.shape(arr_audio))
+        #print(np.shape(arr_instream))
+        #print(np.shape(arr_audio))
 
         ret = (org_sr_instream, np.concatenate([arr_instream, arr_audio], axis=1))
     return ret
@@ -535,6 +535,7 @@ def streaming_text(
         string_response = byte_response.decode("utf-8")
 
     elif task_name == "S2TT":
+        print("in the ...")
         input_data = None
         org_sr, new_arr = streams
         print(new_arr.shape)
