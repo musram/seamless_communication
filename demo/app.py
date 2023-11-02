@@ -549,6 +549,7 @@ def streaming_text(
             target_language=target_language,
         )
         string_response = response
+        print(string_response)
     else:
         print(f"In streaming text {task_name}")
 
