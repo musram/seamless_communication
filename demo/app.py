@@ -478,8 +478,8 @@ def add_to_stream(audio, instream):
     new_arr = torchaudio.functional.resample(
         arr_audio, orig_freq=org_sr_audio, new_freq=AUDIO_SAMPLE_RATE
     )
-    new_arr = new_arr.astype(np.float32)
-    new_arr /= np.max(np.abs(new_arr))
+    new_arr = new_arr.type(torch.float32)
+    new_arr /= torch.max(torch.abs(new_arr))
 
     if instream is None:
         #print(new_arr)
@@ -491,7 +491,7 @@ def add_to_stream(audio, instream):
         #print(np.shape(arr_instream))
         #print(np.shape(arr_audio))
 
-        ret = (org_sr_instream, np.concatenate([arr_instream, arr_audio], axis=1))
+        ret = (org_sr_instream, torch.concatenate([arr_instream, arr_audio], axis=1))
     return ret
 
 def streaming_speech_2_text(
@@ -540,8 +540,8 @@ def streaming_text(
     elif task_name == "S2TT":
         input_data = input_audio_mic
         org_sr, new_arr = streams
-        new_arr_tensor = torch.from_numpy(new_arr)
-        torchaudio.save(input_data, new_arr_tensor, sample_rate=int(AUDIO_SAMPLE_RATE))
+        #new_arr_tensor = torch.from_numpy(new_arr)
+        torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
         print(f"input_data {input_data}")
         _, response = predict(
             task_name=task_name,
