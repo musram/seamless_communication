@@ -467,6 +467,16 @@ def stream_audio(lag):   #for T2ST
     #return iter_chunks(), "fixed response"
 """
 
+def add_to_stream(audio, instream):
+    time.sleep(1)
+    if audio is None:
+        return gr.update(), instream
+    if instream is None:
+        ret = audio
+    else:
+        ret = (audio[0], np.concatenate((instream[1], audio[1])))
+    return ret, ret
+
 def streaming_speech_2_text(
         task_name: str,
         control_source: str,
@@ -476,8 +486,10 @@ def streaming_speech_2_text(
         input_text: str | None,
         source_language: str | None,
         target_language: str,
+        streams
 ) -> str:
     pass
+
 
 def streaming_text(
         task_name: str,
@@ -488,20 +500,33 @@ def streaming_text(
         input_text: str | None,
         source_language: str | None,
         target_language: str,
-    ) -> str:
+        streams
+) -> str:
     if control_source == "translate":
         yield "Please click Translate"
-    print(f"input_text is {input_text}")
+    if task_name == "T2TT":
+        _, response = predict(
+                task_name=task_name,
+                audio_source="",
+                input_audio_mic= None,
+                input_audio_file=None,
+                input_text=input_text,
+                source_language=source_language,
+                target_language=target_language,
+            )
+    elif task_name == "S2TT":
+        _, response = predict(
+            task_name=task_name,
+            audio_source="",
+            input_audio_mic=input_audio_mic,
+            input_audio_file=None,
+            input_text=None,
+            source_language=source_language,
+            target_language=target_language,
+        )
+    else:
+        print(f"In streaming text {task_name}")
 
-    _, response = predict(
-        task_name=task_name,
-        audio_source="",
-        input_audio_mic= None,
-        input_audio_file=None,
-        input_text=input_text,
-        source_language=source_language,
-        target_language=target_language,
-    )
     if response is None:
         response = "Nothing yet in the stream"
     history = ""
@@ -1015,14 +1040,19 @@ with gr.Blocks(css=css) as demo:
 
         # Todo
         # streaming for S2TT
-        """
-        input_audio_file.stop_recording(
+
+        input_audio_mic.stream(
+            fn=add_to_stream,
+            inputs=[input_audio_mic, streams],
+            outputs=[streams],
+            queue=False
+        ).then(
             fn=streaming_text,
             inputs=[task_name,
                     control_source,
-                    " ",
-                    None,
-                    None,
+                    audio_source,
+                    input_audio_mic,
+                    input_audio_file,
                     input_text,
                     source_language,
                     target_language,
@@ -1030,7 +1060,7 @@ with gr.Blocks(css=css) as demo:
             outputs=[output_text],
             queue=False
         )
-        """
+
 
         # streaming fot T2TT
         input_text.change(
