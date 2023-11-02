@@ -522,7 +522,6 @@ def streaming_text(
         yield "Please click Translate"
     response = None
     string_response = None
-    print(f"in the {task_name}")
     if task_name == "T2TT":
         _, response = predict(
                 task_name=task_name,
@@ -537,8 +536,7 @@ def streaming_text(
         string_response = byte_response.decode("utf-8")
 
     elif task_name == "S2TT":
-        print("in the ...")
-        input_data = None
+        input_data = input_audio_mic
         org_sr, new_arr = streams
         print(new_arr.shape)
         torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
