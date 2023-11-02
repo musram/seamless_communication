@@ -571,7 +571,7 @@ def streaming_text(
         yield None, string_response
 
     elif task_name == "T2ST":
-        (sr, wav), text_out= predict(
+        (sr, np_arr), text_out= predict(
             task_name=task_name,
             audio_source="",
             input_audio_mic=None,
@@ -584,7 +584,8 @@ def streaming_text(
         byte_response = text_out.bytes()
         string_response = byte_response.decode("utf-8")
         print(string_response)
-        audio = wav
+        audio_file = write("audio_file", sr, np_arr, normalized=False)
+        audio = AudioSegment.from_mp3(audio_file)
         lag = 2
 
         chunk_length = 1000
@@ -625,7 +626,15 @@ def streaming_text(
 
 
 
-
+def write(audio_file, sr, x, normalized=False):
+    """numpy array to MP3"""
+    channels = 2 if (x.ndim == 2 and x.shape[1] == 2) else 1
+    if normalized:  # normalized array - each item should be a float in [-1, 1)
+        y = np.int16(x * 2 ** 15)
+    else:
+        y = np.int16(x)
+    song = AudioSegment(y.tobytes(), frame_rate=sr, sample_width=2, channels=channels)
+    song.export(audio_file, format="mp3", bitrate="320k")
 
 
 def process_s2st_example(
