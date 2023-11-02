@@ -474,13 +474,15 @@ def add_to_stream(audio, instream):
 
     print(f"instream is {instream}")
     print(f"audio is {audio}")
-    print(f"audio 0 is {audio[0]}")
-    print(f"audio 1 is {audio[1]}")
+    arr_audio, org_sr_audio = torchaudio.load(audio)
+    new_arr = torchaudio.functional.resample(
+        arr_audio, orig_freq=org_sr_audio, new_freq=AUDIO_SAMPLE_RATE
+    )
 
     if instream is None:
-        ret = audio
+        ret = (org_sr_audio, new_arr)
     else:
-        ret = (audio[0], np.concatenate((instream[1], audio[1])))
+        ret = (org_sr_audio, np.concatenate((instream[1], arr_audio)))
     return ret, ret
 
 def streaming_speech_2_text(
@@ -522,10 +524,13 @@ def streaming_text(
                 target_language=target_language,
             )
     elif task_name == "S2TT":
+        input_data = None
+        new_arr, org_sr = streams
+        torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
         _, response = predict(
             task_name=task_name,
             audio_source="",
-            input_audio_mic=streams,
+            input_audio_mic=input_data,
             input_audio_file=None,
             input_text=None,
             source_language=source_language,
