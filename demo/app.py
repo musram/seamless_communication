@@ -513,6 +513,7 @@ def streaming_text(
     if control_source == "translate":
         yield "Please click Translate"
     response = None
+    string_response = None
     if task_name == "T2TT":
         _, response = predict(
                 task_name=task_name,
@@ -523,6 +524,9 @@ def streaming_text(
                 source_language=source_language,
                 target_language=target_language,
             )
+        byte_response = response.bytes()
+        string_response = byte_response.decode("utf-8")
+
     elif task_name == "S2TT":
         input_data = None
         new_arr, org_sr = streams
@@ -536,14 +540,12 @@ def streaming_text(
             source_language=source_language,
             target_language=target_language,
         )
+        string_reponse = response
     else:
         print(f"In streaming text {task_name}")
 
     if response is None:
-        response = "Nothing yet in the stream"
-    history = ""
-    byte_response = response.bytes()
-    string_response = byte_response.decode("utf-8")
+        string_reponse = "Nothing yet in the stream"
     """
     # This is to split into chunks and then make a generator out of it.
     string_response_split = string_response.split(" ")
