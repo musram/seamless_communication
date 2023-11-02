@@ -480,9 +480,12 @@ def add_to_stream(audio, instream):
     )
 
     if instream is None:
+        print(new_arr)
+        print(org_sr_audio)
+        print(org_sr_audio, new_arr)
         ret = (org_sr_audio, new_arr)
     else:
-        arr_instream, org_sr_instream = instream
+        org_sr_instream, arr_instream  = instream
         ret = (org_sr_instream, np.concatenate((arr_instream, arr_audio)))
     return ret, ret
 
