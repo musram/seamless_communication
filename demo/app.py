@@ -581,10 +581,9 @@ def streaming_text(
             target_language=target_language,
         )
 
-        print(type(wav))
-        print(text_out)
         byte_response = text_out.bytes()
         string_response = byte_response.decode("utf-8")
+        print(string_response)
         audio = wav
         lag = 2
 
