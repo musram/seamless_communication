@@ -12,6 +12,7 @@ import sys
 import os
 import time
 import re
+from pydub import AudioSegment
 
 base_path = os.path.dirname(sys.path[0])
 sys.path.append(os.path.join(base_path, "src"))
@@ -444,6 +445,19 @@ def add_to_text_stream(
         final_text = instreams + [[input_text, None]]
     return "", final_text
 
+
+def stream_audio(audio_file, lag, text_out):
+    audio = AudioSegment.from_wav(audio_file)
+    i = 0
+    chunk_size = 1000
+
+    while chunk_size * i < len(audio):
+        chunk = audio[chunk_size * i:chunk_size * (i + 1)]
+        i += 1
+        if chunk:
+            file = f"/tmp/{i}.mp3"
+            chunk.export(file, format="mp3")
+            yield file, text_out
 """"
 def stream_audio(lag):   #for T2ST
     audio_file = 'test.mp3'  # Your audio file path
@@ -536,6 +550,7 @@ def streaming_text(
             )
         byte_response = response.bytes()
         string_response = byte_response.decode("utf-8")
+        yield None, string_response
 
     elif task_name == "S2TT":
         input_data = input_audio_mic
@@ -553,7 +568,30 @@ def streaming_text(
             target_language=target_language,
         )
         string_response = response
-        print(string_response)
+        yield None, string_response
+
+    elif task_name == "T2ST":
+        (sr, wav), text_out= predict(
+            task_name=task_name,
+            audio_source="",
+            input_audio_mic=None,
+            input_audio_file=None,
+            input_text=input_text,
+            source_language=source_language,
+            target_language=target_language,
+        )
+        audio = AudioSegment.from_wav(wav)
+        i = 0
+        chunk_size = 1000
+
+        while chunk_size * i < len(audio):
+            chunk = audio[chunk_size * i:chunk_size * (i + 1)]
+            i += 1
+            if chunk:
+                file = f"/tmp/{i}.mp3"
+                chunk.export(file, format="mp3")
+                yield file, text_out
+
     else:
         print(f"In streaming text {task_name}")
 
