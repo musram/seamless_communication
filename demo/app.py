@@ -584,16 +584,24 @@ def streaming_text(
         print(type(wav))
         print(text_out)
         audio = wav
-        i = 0
-        chunk_size = 1000
+        lag = 2
 
-        while chunk_size * i < len(audio):
-            chunk = audio[chunk_size * i:chunk_size * (i + 1)]
-            i += 1
-            if chunk:
-                file = f"/tmp/{i}.mp3"
-                chunk.export(file, format="mp3")
-                yield file, text_out
+        chunk_length = 1000
+        chunks = []
+        while len(audio) > chunk_length:
+            chunks.append(audio[:chunk_length])
+            audio = audio[chunk_length:]
+        if len(audio):  # Ensure we don't end up with an empty chunk
+            chunks.append(audio)
+
+        def iter_chunks():
+            for chunk in chunks:
+                file_like_object = chunk.export(format="mp3")
+                data = file_like_object.read()
+                time.sleep(lag)
+                yield data
+
+        return iter_chunks(), text_out
 
     else:
         print(f"In streaming text {task_name}")
