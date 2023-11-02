@@ -486,7 +486,7 @@ def add_to_stream(audio, instream):
         ret = (org_sr_audio, new_arr)
     else:
         org_sr_instream, arr_instream  = instream
-        ret = (org_sr_instream, np.concatenate((arr_instream, arr_audio)))
+        ret = (org_sr_instream, np.concatenate([arr_instream, arr_audio]))
     return ret
 
 def streaming_speech_2_text(
