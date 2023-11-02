@@ -623,7 +623,7 @@ def streaming_text(
         print(f"history is {history}")
         yield history
     """
-    yield string_response
+    yield None, string_response
 
 
 
@@ -1159,7 +1159,7 @@ with gr.Blocks(css=css) as demo:
                     target_language,
                     streams
                     ],
-                outputs = [output_text],
+                outputs = [output_audio, output_text],
                 queue= False
             )
 
