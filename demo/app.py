@@ -536,7 +536,8 @@ def streaming_text(
 
     elif task_name == "S2TT":
         input_data = None
-        new_arr, org_sr = streams
+        org_sr, new_arr = streams
+        print(new_arr.shape)
         torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
         _, response = predict(
             task_name=task_name,
