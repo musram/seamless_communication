@@ -1074,6 +1074,7 @@ with gr.Blocks(css=css) as demo:
                     input_text,
                     source_language,
                     target_language,
+                    streams
                     ],
             outputs=[output_text],
             queue=False
