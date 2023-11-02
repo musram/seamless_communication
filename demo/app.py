@@ -538,8 +538,8 @@ def streaming_text(
     elif task_name == "S2TT":
         input_data = input_audio_mic
         org_sr, new_arr = streams
-        print(new_arr.shape)
-        torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
+        new_arr_tensor = torch.from_numpy(new_arr)
+        torchaudio.save(input_data, new_arr_tensor, sample_rate=int(AUDIO_SAMPLE_RATE))
         print(f"input_data {input_data}")
         _, response = predict(
             task_name=task_name,
