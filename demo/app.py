@@ -584,8 +584,8 @@ def streaming_text(
         byte_response = text_out.bytes()
         string_response = byte_response.decode("utf-8")
         print(string_response)
-        audio_file = write("audio_file", sr, np_arr, normalized=False)
-        audio = AudioSegment.from_mp3(audio_file)
+        write("audio_file", sr, np_arr, normalized=False)
+        audio = AudioSegment.from_mp3("audio_file")
         lag = 2
 
         chunk_length = 1000
