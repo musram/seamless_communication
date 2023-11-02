@@ -539,11 +539,12 @@ def streaming_text(
         org_sr, new_arr = streams
         print(new_arr.shape)
         torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
+        print(f"input_data {input_data}")
         _, response = predict(
             task_name=task_name,
             audio_source="",
-            input_audio_mic=input_data,
-            input_audio_file=None,
+            input_audio_mic=None,
+            input_audio_file=input_data,
             input_text=None,
             source_language=source_language,
             target_language=target_language,
