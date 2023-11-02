@@ -595,14 +595,12 @@ def streaming_text(
         if len(audio):  # Ensure we don't end up with an empty chunk
             chunks.append(audio)
 
-        def iter_chunks():
-            for chunk in chunks:
-                file_like_object = chunk.export(format="mp3")
-                data = file_like_object.read()
-                time.sleep(lag)
-                yield data
+        for chunk in chunks:
+            file_like_object = chunk.export(format="mp3")
+            data = file_like_object.read()
+            time.sleep(lag)
+            yield data, string_response
 
-        return iter_chunks(), string_response
 
     else:
         print(f"In streaming text {task_name}")
