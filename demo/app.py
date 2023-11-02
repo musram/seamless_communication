@@ -580,6 +580,9 @@ def streaming_text(
             source_language=source_language,
             target_language=target_language,
         )
+
+        print(type(wav))
+        print(text_out)
         audio = AudioSegment.from_wav(wav)
         i = 0
         chunk_size = 1000
