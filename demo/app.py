@@ -471,6 +471,9 @@ def add_to_stream(audio, instream):
     time.sleep(1)
     if audio is None:
         return gr.update(), instream
+
+    print(f"instream is {instream}")
+    print(f"audio is {audio}")
     if instream is None:
         ret = audio
     else:
@@ -518,7 +521,7 @@ def streaming_text(
         _, response = predict(
             task_name=task_name,
             audio_source="",
-            input_audio_mic=input_audio_mic,
+            input_audio_mic=streams,
             input_audio_file=None,
             input_text=None,
             source_language=source_language,
@@ -1073,6 +1076,7 @@ with gr.Blocks(css=css) as demo:
                     input_text,
                     source_language,
                     target_language,
+                    streams
                     ],
                 outputs = [output_text],
                 queue= False
