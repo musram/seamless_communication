@@ -54,7 +54,7 @@ A demo is hosted [here](https://huggingface.co/spaces/facebook/seamless_m4t) on 
 ```bash
 cd demo
 pip install -r requirements.txt
-python app.py
+python original_app.py
 ```
 
 # Libraries
