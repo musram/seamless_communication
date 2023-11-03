@@ -19,7 +19,7 @@ sys.path.append(os.path.join(base_path, "src"))
 print(sys.path)
 from seamless_communication.models.inference.translator import Translator
 
-DESCRIPTION = """# SeamlessM4T
+DESCRIPTION = """# SeamlessM4T  with Streaming
 
 [SeamlessM4T](https://github.com/facebookresearch/seamless_communication) is designed to provide high-quality
 translation, allowing people from different linguistic communities to communicate effortlessly through speech and text.
