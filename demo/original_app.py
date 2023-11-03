@@ -359,7 +359,8 @@ def predict(
 
 
 def process_s2st_example(
-    input_audio_file: str, target_language: str
+        input_audio_file: str,
+        target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2ST",
@@ -373,7 +374,8 @@ def process_s2st_example(
 
 
 def process_s2tt_example(
-    input_audio_file: str, target_language: str
+        input_audio_file: str,
+        target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="S2TT",
@@ -387,7 +389,9 @@ def process_s2tt_example(
 
 
 def process_t2st_example(
-    input_text: str, source_language: str, target_language: str
+        input_text: str,
+        source_language: str,
+        target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2ST",
@@ -401,7 +405,9 @@ def process_t2st_example(
 
 
 def process_t2tt_example(
-    input_text: str, source_language: str, target_language: str
+        input_text: str,
+        source_language: str,
+        target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="T2TT",
@@ -415,7 +421,8 @@ def process_t2tt_example(
 
 
 def process_asr_example(
-    input_audio_file: str, target_language: str
+        input_audio_file: str,
+        target_language: str
 ) -> tuple[tuple[int, np.ndarray] | None, str]:
     return predict(
         task_name="ASR",
